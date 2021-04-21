@@ -1,0 +1,112 @@
+---
+title: "Adam Fire DV Final"
+output: html_notebook
+---
+
+I understand I am allowed to discuss the data set and methodology with classmates in this class as I work on this project, but the decisions and actual work are my own.   I certify that I have not done anyone else's Final Project work for them.  I acknowledge that I am not allowed to provide the data set from this assignment to any person or website outside of this class.  I agree to delete this data set at the conclusion of the project.
+
+```{r}
+library(ggplot2)
+library(dplyr)
+library(cowplot)
+library(ggpubr)
+library(treemap)
+```
+
+```{r}
+grade<-read.csv(file.choose())
+```
+
+```{r}
+View(grade)
+```
+
+
+```{r}
+g2010 <- grade %>%
+ filter(YEAR == 2010)
+g2011 <- grade %>%
+ filter(YEAR == 2011)
+g2012 <- grade %>%
+ filter(YEAR == 2012)
+g2013 <- grade %>%
+ filter(YEAR == 2013)
+g2014 <- grade %>%
+ filter(YEAR == 2014)
+g2015 <- grade %>%
+ filter(YEAR == 2015)
+
+x<-c(2010,2011,2012,2013,2014,2015)
+y<-c(mean(g2010$FE,na.rm = TRUE), mean(g2011$FE,na.rm = TRUE), mean(g2012$FE,na.rm = TRUE), mean(g2013$FE,na.rm = TRUE), mean(g2014$FE,na.rm = TRUE), mean(g2015$FE,na.rm = TRUE))
+```
+
+# Figure 1
+
+```{r}
+
+l <- data.frame( x = c(-Inf, Inf), y = mean(grade$FE, na.rm = TRUE), cutoff = factor(mean(grade$FE, na.rm = TRUE)) )
+ggplot(data = NULL, aes(x,y)) + geom_point(size = 4) + ylim(0,1) + ylab("Average Final Evaluation Score") + xlab("Year") + ggtitle("Average FE Scores of all Classes Each Year") + theme_cowplot() + theme(plot.title = element_text(hjust = 0.5, size = 18)) + geom_line(col="blue")
+
+```
+I made a simple dot plot for my first graph because I wanted to answer a simple question: are the professor's teaching methods improving? This is a graph meant for any casual observer to notice a small trend. It does appear that the final evaluation grades are improving a little over time. There is a huge space at the bottom because according to FDV, these kinds of visuals should start at zero. When I say this, I mean that, for instance, we could easily replace this with a bar graph and it would be misleading if we started above zero (the trends would look stronger than they should appear). The possible scores are 0-1 and the graph needs to show that. I don't think a grid is necessary for this visual since the specific numbers are not important, (FDV would probably disagree with me). The connected lines are here to help show the points' positions relative to one another as opposed to any actual data. The titles and data-ink are kept legibly large according to FDV standards (as I will continue to maintain with further visuals). It would be more interesting to see how this graph looks after another 5 years of teaching.
+
+# Figure 2
+
+```{r}
+ggplot(grade, aes(y = factor(DES), x = FE)) + geom_boxplot(fill = "tan", width = .6) +
+  stat_summary(fun.y = "mean", geom = "point", size = 5, shape = 21, fill = "red", col = "black")  + ylab("Class") + xlab("Average Final Evaluation Score") + ggtitle("FE Scores of all Students Per Class") + theme_bw() + theme(plot.title = element_text(hjust = 0.5, size = 20, face = 2))
+```
+This visual tells the story of whether the final of the math or data science classes is more difficult. The box plot seems to suggest that the data classes tend to have better grades, and would thus, tend to be easier classes (I feel bad for the guy who got a 0 in math). FDV would approve of my grid selection this time. I added in the red dots to illustrate the means of the FEs. No need for a legend; it would be redundant since it is easy to label these two categories on the y-axis. No need for too much color either, my two choices were not meant to be too vibrant, but I also made sure that they were distinct from one another.
+
+# Figure 3
+
+```{r,fig.height = 11, fig.width = 10}
+a<-ggplot(grade, aes(x = E1, fill = DES)) + geom_density(alpha = .3, size = .75) + guides(fill = FALSE) + ggtitle("Exam 1") + theme_bw() + xlab("") + ylab("")
+b<-ggplot(grade, aes(x = E2, fill = DES)) + geom_density(alpha = .3, size = .75)  + theme_bw()  + guides(fill = guide_legend(title = NULL)) + theme(legend.position = "bottom") + ggtitle("Exam 2") + ylab("") + xlab("")+
+  scale_fill_discrete(labels = c("Math", "Data Science"))
+c<-ggplot(grade, aes(x = E3, fill = DES)) + geom_density(alpha = .3, size = .75) + guides(fill = FALSE) + theme_bw() + theme(axis.title=element_text(size=15)) + xlab("Score") + ggtitle("Exam 3") + ylab("") + ylim(0,3)
+
+fig<-ggarrange(a,b,c,ncol = 1) + theme_bw()
+
+annotate_figure(fig, top = text_grob("Densities of Exam Scores of Data and Math Classes", color = "brown", face = "bold", size = 20),  left = text_grob("Densities", rot = 90, size = 14))
+```
+
+With this visual, I compared the exam scores of the data and math class exams. Originally, I was going to omit the 3rd exam from the visual since there were no 3rd data exams. But I think it is important to be able to compare the 3 exams to each other in addition to comparing the math exams to the data exams. According to FDV, combined density plots work well as long as they are distinct and since there are only 2 groups in my plots, it seems obvious which one is which. This visual helps further dive into my previous question while giving us some more info. This further agrees with what we saw from my previous visual. We see that the data curve is denser on the right side, meaning that more data people tend to get higher grades on these exams than math people. I don't think a legend title is necessary; keeping the legend nice and simple gets the point across easily. I placed it in the middle since the bottom graph has only one class category and we can compare the top 2 parts more easily. Again I'm keeping simplicity, low non-data ink, and other FDV techniques in mind. Like my other visuals I made sure that this graph is not bad, ugly, or wrong. I made sure to keep the x and y-axes the same to prevent misleading info. The only thing that slightly bothered me was that I could not figure out how to have only one legend while also not altering the dimensions of one of the graphs (that's why the second graph is a bit less tall than the others).
+
+
+```{r}
+vec <- rep(1,411)
+gradefortree <- grade %>%
+ mutate(newcol = vec)
+View(gradefortree)
+```
+
+# Figure 4
+
+```{r}
+treemap(gradefortree,
+            index=c("DES","GRADE"),
+            vSize="newcol",
+            type="index",
+        title = "Proportions of Grades Earned by Math and Data Science Students",
+        ymod.labels = c(.25,0),
+        fontsize.labels=c(17, 12),
+        fontsize.title = 17,
+) 
+```
+I made a tree map that shows the counts of all students who attained each grade out of both classes. This helps compare proportions of overall grades among both subjects. It also exemplifies how many more math students there are in this professor's classes. FDV doesn't really go over tree maps in a ton of detail, but it does say to use counts for the areas in order to make the proportions more intuitive for the viewers. So I really just focused on making this visual easy to understand, useful, and visually satisfying. That's why I kept many of the default features. I just had to move/resize the text to make it more presentable. The only thing I could not really figure out was why some letters were duplicated. These only added smaller sections, so they might be typos of some sort. From this visual, we can gather that both classes have great students since the counts decrease as the grades decrease. One would imagine that a class of average Joes would produce larger B and C categories.
+
+```{r}
+datas <- grade %>%
+ filter(DES == "DATA")
+datas2 <- datas %>%
+  rename(Final = FE)
+View(datas2)
+```
+
+# Figure 5
+
+```{r}
+ggplot(datas2, aes(x = E1, y = E2, size = Final)) + geom_point(shape = 21, colour = "black", fill = "lightgreen") + xlab("Exam 1 Score") + ylab("Exam 2 Score") + ggtitle("Exam 1, Exam 2, and Final Evaluation Scores\n of Individual Data Students") + theme_minimal_grid() + theme(plot.title = element_text(hjust = 0.5, size = 21, face = "bold"), legend.title = element_text(colour = "darkgreen",size = 15), legend.background = element_rect(fill="lightgrey", size=.7, linetype="solid", color ="black"), legend.position = c(.1, .3), legend.spacing.x = unit(.1, "cm")) + scale_fill_discrete(name = "Final Eval") 
+```
+For my last figure, I made a balloon plot. I like how aesthetically pleasing this one came out. I took a minimal grid approach because it's important to be able to compare these points to their respective axis values, but the grid should also not overwhelm since it would be hard to judge specific inflated point values anyway. I moved the legend inside the graph because there was empty space and the comparison would be closer to the points. It is obviously important to include the legend since we need a reference to know the 3rd variable. The point of this visual is to analyze data science grades student by student, something I haven't done yet. Each point gives an individual's exam 1, exam 2, and final score. For this visual, we look to the top right corner to find big points in order to find the best students (in terms of the 3 measured grades). If a point does not meet one of these visual conditions, we know that they messed up at least one of the grades. So it's good that we see the top right corner being densely populated with large points, that means most students get good grades in these 3 areas. Since there are more points on the left half than the bottom half, it seems like exam 2 was more difficult than exam 1.

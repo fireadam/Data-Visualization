@@ -1,0 +1,45 @@
+---
+title: "Adam Fire DV Exam 2"
+output: html_notebook
+---
+
+I pledge the work on this exam is my own and I have not used any online answer services or input from any colleagues to formulate these answers.  I understand I am allowed to use my online textbooks, class notes, and general internet searches. Adam Fire.
+
+```{r}
+library(ggplot2)
+library(ggpubr)
+library(dplyr)
+```
+# 1
+I would probably go one of two ways. I think that a choropleth or a bar graph might really help support this figure. For one way, I would make have 2 choropleths, one  showing the amount of cases per capita of each county and another to show the mask use of each county. If you used the same color scales for more cases and less mask use, it would be easy to see the correlations of each county. You will easily be able to tell that the frequent mask users have less cases per capita. My other idea is to make two bar graphs to support the third paper from the article, one that shows infection rates in certain states before mask mandates were introduced and one after. This would easily show the power of mask mandates to support the article.
+
+# 2
+I'm choosing Salem county in New Jersey and Bergen county in NJ. Bergen and Salem have very similar mask uses but very different numbers of cases. I'm choosing these 2 because they show that population and population density play an obvious role in COVID spread. Since Salem only has a fraction of Bergan's Population, it's no wonder why Bergen has so many more cases.
+# 3
+```{r}
+counties<-read.csv(file.choose())
+counties
+```
+
+```{r}
+maskuse<-read.csv(file.choose())
+maskuse
+```
+```{r}
+View(maskuse)
+View(counties)
+```
+
+# 3
+```{r}
+g <- c("Bergen", "Salem", "Essex")
+x <- c(1206, 2, 602)
+dat <- data.frame(g, x)
+g1<-ggplot(dat, aes(x = g, y = x)) + geom_col(fill = "orangered3",col ="black") + theme_bw() + xlab("NJ County") + ylab("Cases") + ggtitle("Cases VS NJ County")
+g2 <- c("Bergen", "Salem", "Essex")
+x2 <- c(1206/932202, 2/4926, 602/1802000)
+dat2 <- data.frame(g2, x2)
+g2<-ggplot(dat2, aes(x = g2, y = x2)) + geom_col(fill = "orangered3",col ="black") + theme_bw() + xlab("NJ County") + ylab("Cases") + ggtitle("Cases/Population VS NJ County")
+ggarrange(g1,g2, nrow = 1)
+```
+Now you can see that population alone already has an enormous effect on how many cases there are. And we haven't even taken population density into account yet (I would if I had more time). I added Essex because it has a similar mask use rate and has a very large population. Again, I would add more if I had time. I just wanted this graph to stress that you need to take population, area, and density into account when talking about COVID (or really anything.)

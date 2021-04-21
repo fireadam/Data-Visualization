@@ -1,0 +1,64 @@
+---
+title: "Adam Fire DV Exam 1"
+output: html_notebook
+---
+# Front Row
+```{r}
+library(Stat2Data)
+library(lattice)
+library(gcookbook)
+library(ggplot2)
+library(dplyr)
+```
+
+```{r}
+barley
+?barley
+```
+# 1
+Total yield in bushels per acre for 10 varieties at 6 sites in each of two years.
+Variables: yield (quantitative), site(categorical), year(categorical), variety (categorical)
+
+# 2
+```{r}
+
+b <- barley
+b %>%
+  filter(year == 1931)
+sum(b$yield)/length(b$yield)
+barley %>%
+  mutate(newcol = yield > 34.42056)
+```
+# 3
+```{r}
+ggplot(barley) + geom_density(aes(x = yield, fill = site), alpha = 0.2)
+```
+# a
+The yields are largely dependent which site they are yielded at. This graph specifically looks at the densities so that we can see how often certain yields are yielded.
+
+# b
+This figure is aesthetically pleasing, the color choice is decent, and it is informative. However, it can be difficult to read where some of these densities are, especially in the middle when they are all on top of each other.
+
+# c
+I would probably split this into multiple density plots so that you could see each individual plot easier.
+
+# 4
+```{r}
+ggplot(barley) + geom_point(aes(x = site, y = yield), fill = "black", pch = 21)+ggtitle("Barley Yields at 6 Minnesota Sites")+theme_minimal()+xlab("Site")+ylab("Yield (Bushels/Acre) ")
+```
+# a
+This again wants to show how different the yields are compared with each site. But this time we only see the minimums and maximums of each site.
+
+# b
+While you can get the info that it wants to show you since you can see the entire groups and compare them, the densities of the points are virtually impossible to distinguish so it may be misleading.
+
+# c
+I would recommend making this a boxplot or violin plot so that you can visualize the densities.
+
+# 5
+
+# a
+```{r}
+ggplot(barley) + geom_violin(aes(x = site, y = yield), trim = FALSE, fill = "grey")+ggtitle("Barley Yields at 6 Minnesota Sites")+theme_minimal()+xlab("Site")+ylab("Yield (Bushels/Acre) ") + theme(plot.title = element_text(hjust = 0.5))
+```
+Now we see aesthetic and analytic improvements. We can actually see how many points there are clustered together and where they are (unlike the previous graph). Now that we can see the densities of the points, we can infer more accurate stories about the sites. For instance, we can now see that more of the yeilds of Crookston and Waseca tended to be more similar than the previous graph. Also, while Crookston looks better than Morris in the previous graph, this graph shows that they are almost identical aside from slightly different density shapes. University Farm also has a very dense bottom and the previous graph would lead you to believe that its yields are better than they really are. Densities are crucial to look at because they allow us to see the full picture, we can visually ballpark averages, where the majority of the points are, and how many outliers there are. 
